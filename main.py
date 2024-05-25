@@ -1,5 +1,6 @@
 import discord
 import random
+import os
 
 # List of characters with the last name Kong
 kong_characters = [
@@ -17,8 +18,12 @@ kong_characters = [
     "Candy Kong"
 ]
 
-# Your bot's token
-TOKEN = 'YOUR_BOT_TOKEN'
+# Your bot's token from the environment variable
+TOKEN = os.getenv('DISCORD_TOKEN')
+
+# Ensure the token is correctly read
+if TOKEN is None:
+    raise ValueError("No token found. Please set the DISCORD_TOKEN environment variable.")
 
 # Create an instance of the client
 intents = discord.Intents.default()
