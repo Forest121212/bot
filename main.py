@@ -1,6 +1,8 @@
 import discord
 import random
 import os
+import asyncio
+from aiohttp import web
 
 # List of characters with the last name Kong
 kong_characters = [
@@ -53,5 +55,26 @@ async def on_message(message):
     else:
         print('Command not recognized')  # Debugging statement
 
-# Run the client
-client.run(TOKEN)
+# Dummy HTTP server to keep Render happy
+async def handle(request):
+    return web.Response(text="Bot is running!")
+
+app = web.Application()
+app.add_routes([web.get('/', handle)])
+
+async def run_bot():
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, '0.0.0.0', 10000)
+    await site.start()
+
+    try:
+        await client.start(TOKEN)
+    except Exception as e:
+        print(f'Error: {e}')
+        await client.close()
+        await asyncio.sleep(10)
+        await run_bot()
+
+if __name__ == "__main__":
+    asyncio.run(run_bot())
